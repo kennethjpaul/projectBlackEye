@@ -31,35 +31,11 @@ namespace WindowsFormsApplication1
             
             List<mainTile> mainTile_list = new List<mainTile>();
             metroPanelmainTile.Controls.Clear();
-            string specificFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlackEye");
-
-            if (!Directory.Exists(specificFolder))
-                Directory.CreateDirectory(specificFolder);
-
-            string fileName = Path.Combine(specificFolder, "data_file.txt");
-
-            if (!File.Exists(fileName))
-            {
-               var k = File.Create(fileName);
-                k.Close();
-            }
-
-            using (StreamReader file = File.OpenText(fileName))
-                {
-                
-                List<mainTile> mainTile_list_tmp = new List<mainTile>();
-                JsonSerializer serializer_read = new JsonSerializer();
-                mainTile_list_tmp = (List<mainTile>)serializer_read.Deserialize(file, typeof(List<mainTile>));
-                if(mainTile_list_tmp!=null)
-                {
-                    mainTile_list = mainTile_list_tmp;
-                }      
-            }
-
+            mainTile_list = loadLinkFromFile();
             // TODO: StreamReaderJSON and put the code in loop
-           // mainTile m = new mainTile("New York Times", "https://www.facebook.com/nytimes/");
-           // mainTile_list.Add(m);
-            if(mainTile_list != null)
+            // mainTile m = new mainTile("New York Times", "https://www.facebook.com/nytimes/");
+            // mainTile_list.Add(m);
+            if (mainTile_list != null)
             {
                 for (int i = 0; i < mainTile_list.Count; i++)
                 {
@@ -162,19 +138,24 @@ namespace WindowsFormsApplication1
             HtmlAgilityPack.HtmlDocument document = new HtmlAgilityPack.HtmlDocument();
             document.LoadHtml(html);
             var anchors = document.DocumentNode.SelectNodes("//div[@class='lfloat _ohe']/span[@class='_3m6-']/div[@class='_6ks']/a");
+            //TODO: Debug the Null values, find out what is happening
             foreach (var a in anchors)
             {
-                string onmouseover = HttpUtility.HtmlDecode(a.Attributes.AttributesWithName("onmouseover").First().Value);
-                string image = HttpUtility.HtmlDecode(a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value);
-                string title = a.ParentNode.NextSibling.FirstChild.FirstChild.InnerText;
-                var pattern = new Regex(@"LinkshimAsyncLink.swap\(this, ""([^""]+)""\);");
-                var pattern_image = new Regex(@"&url=([^&]+)");
+                if (a.Attributes.AttributesWithName("onmouseover").First().Value!=null && a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value!=null && a.ParentNode.NextSibling!=null)
+                {
+                    string onmouseover = HttpUtility.HtmlDecode(a.Attributes.AttributesWithName("onmouseover").First().Value);
+                    string image = HttpUtility.HtmlDecode(a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value);
+                    string title = a.ParentNode.NextSibling.FirstChild.FirstChild.InnerText;
+                    var pattern = new Regex(@"LinkshimAsyncLink.swap\(this, ""([^""]+)""\);");
+                    var pattern_image = new Regex(@"&url=([^&]+)");
 
-                var link = pattern.Match(onmouseover).Groups[1].Value.Replace("\\", "");
-                var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
-                mainTile newsTile = new mainTile();
-                newsTile.add_newsTile(title, link, img);
-                list.Add(newsTile);
+                    var link = pattern.Match(onmouseover).Groups[1].Value.Replace("\\", "");
+                    var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
+                    mainTile newsTile = new mainTile();
+                    newsTile.add_newsTile(title, link, img);
+                    list.Add(newsTile);
+                }              
+                
             }
 
             return list;
@@ -197,6 +178,62 @@ namespace WindowsFormsApplication1
         private void addButton_Click(object sender, EventArgs e)
         {
             List<mainTile> mainTile_list = new List<mainTile>();
+
+            mainTile_list = loadLinkFromFile();
+            string[] promptValue = Prompt.ShowDialog("Title", "Link","Enter Facebook Link");
+            Regex trimmer = new Regex(@"\s\s+");
+
+           promptValue[0] = trimmer.Replace(promptValue[0], " ");
+           promptValue[1] = trimmer.Replace(promptValue[1], " ");
+            // TODO: check for link format
+            if (promptValue[0] != " " && promptValue[0] != "" && promptValue[1] != " " && promptValue[1] != "")
+                {
+                    mainTile m1 = new mainTile();
+                    m1.add_mainTile(promptValue[0], promptValue[1]);
+                    mainTile_list.Add(m1);
+                }
+
+            writeLinktoFile(mainTile_list);
+
+            
+            MakeMainTiles();
+        }
+
+        private void writeLinktoFile(List<mainTile> mainTile_list)
+        {
+            string specificFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlackEye");
+
+            if (!Directory.Exists(specificFolder))
+                Directory.CreateDirectory(specificFolder);
+
+            string fileName = Path.Combine(specificFolder, "data_file.txt");
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Converters.Add(new JavaScriptDateTimeConverter());
+            serializer.NullValueHandling = NullValueHandling.Ignore;
+
+            if (!File.Exists(fileName))
+            {
+                var k = File.Create(fileName);
+                k.Close();
+            }
+                
+
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+
+
+                using (JsonWriter writer = new JsonTextWriter(sw))
+                {
+                    serializer.Serialize(writer, mainTile_list);
+                }
+            }
+        }
+
+        private List<mainTile> loadLinkFromFile()
+        {
+            List<mainTile> mainTile_list = new List<mainTile>();
+
             string specificFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlackEye");
 
             if (!Directory.Exists(specificFolder))
@@ -218,35 +255,33 @@ namespace WindowsFormsApplication1
                     mainTile_list = mainTile_list_tmp;
                 }
             }
-            // TODO: Get link from input
-            string[] promptValue = Prompt.ShowDialog("Title", "Link","Enter Facebook Link");
+            return mainTile_list;
+        }
+
+        private void removeButton_Click(object sender, EventArgs e)
+        {
+            List<mainTile> mainTile_list = new List<mainTile>();
+
+            mainTile_list = loadLinkFromFile();
+            string promptValue = PromptRemove.ShowDialog();
             Regex trimmer = new Regex(@"\s\s+");
 
-           promptValue[0] = trimmer.Replace(promptValue[0], " ");
-           promptValue[1] = trimmer.Replace(promptValue[1], " ");
-            // TODO: check for link format
-            if (promptValue[0] != " " && promptValue[0] != "" && promptValue[1] != " " && promptValue[1] != "")
-                {
-                    mainTile m1 = new mainTile();
-                    m1.add_mainTile(promptValue[0], promptValue[1]);
-                    mainTile_list.Add(m1);
-                }
-                
-
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Converters.Add(new JavaScriptDateTimeConverter());
-            serializer.NullValueHandling = NullValueHandling.Ignore;
-
-            using (StreamWriter sw = new StreamWriter(fileName))
+            promptValue= trimmer.Replace(promptValue, " ");
+            if (promptValue!= " " && promptValue != "")
             {
-                if (!File.Exists(fileName))
-                    File.Create(fileName);
-
-                using (JsonWriter writer = new JsonTextWriter(sw))
+                string _str = mainTile_list.Find(x => x.Title.Contains(promptValue)).Title;
+                if(promptValue.Equals(_str, StringComparison.Ordinal))
                 {
-                    serializer.Serialize(writer, mainTile_list);
+                    int _index = mainTile_list.FindIndex(x => x.Title.Contains(promptValue));
+                    if (_index >= 0)
+                    {
+                        mainTile_list.RemoveAt(_index);
+                    }
                 }
+           
             }
+                
+            writeLinktoFile(mainTile_list);
             MakeMainTiles();
         }
     }

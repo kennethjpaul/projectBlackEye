@@ -31,6 +31,7 @@
             this.metroPanelLinks = new MetroFramework.Controls.MetroPanel();
             this.metroPanelmainTile = new MetroFramework.Controls.MetroPanel();
             this.addButton = new MetroFramework.Controls.MetroTile();
+            this.removeButton = new MetroFramework.Controls.MetroTile();
             this.SuspendLayout();
             // 
             // metroPanelLinks
@@ -69,12 +70,21 @@
             // 
             // addButton
             // 
-            this.addButton.Location = new System.Drawing.Point(1761, 92);
+            this.addButton.Location = new System.Drawing.Point(1711, 92);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(75, 75);
             this.addButton.TabIndex = 6;
             this.addButton.Text = "Add";
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
+            // 
+            // removeButton
+            // 
+            this.removeButton.Location = new System.Drawing.Point(1798, 92);
+            this.removeButton.Name = "removeButton";
+            this.removeButton.Size = new System.Drawing.Size(75, 75);
+            this.removeButton.TabIndex = 7;
+            this.removeButton.Text = "Remove";
+            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
             // 
             // Form1
             // 
@@ -82,6 +92,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1920, 1080);
+            this.Controls.Add(this.removeButton);
             this.Controls.Add(this.addButton);
             this.Controls.Add(this.metroPanelmainTile);
             this.Controls.Add(this.metroPanelLinks);
@@ -96,6 +107,7 @@
         private MetroFramework.Controls.MetroPanel metroPanelLinks;
         private MetroFramework.Controls.MetroPanel metroPanelmainTile;
         private MetroFramework.Controls.MetroTile addButton;
+        private MetroFramework.Controls.MetroTile removeButton;
     }
 }
 
