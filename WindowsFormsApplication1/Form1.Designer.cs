@@ -99,6 +99,8 @@
             this.Name = "Form1";
             this.Text = "Experiment";
             this.TextAlign = System.Windows.Forms.VisualStyles.HorizontalAlign.Center;
+            this.TopMost = true;
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.ResumeLayout(false);
 
         }
