@@ -219,9 +219,20 @@ namespace WindowsFormsApplication1
                 }
             }
             // TODO: Get link from input
-            mainTile m1 = new mainTile();
-            m1.add_mainTile("Science Alert", "https://www.facebook.com/ScienceAlert/");
-            mainTile_list.Add(m1);
+            string[] promptValue = Prompt.ShowDialog("Title", "Link","Enter Facebook Link");
+            Regex trimmer = new Regex(@"\s\s+");
+
+           promptValue[0] = trimmer.Replace(promptValue[0], " ");
+           promptValue[1] = trimmer.Replace(promptValue[1], " ");
+            // TODO: check for link format
+            if (promptValue[0] != " " && promptValue[0] != "" && promptValue[1] != " " && promptValue[1] != "")
+                {
+                    mainTile m1 = new mainTile();
+                    m1.add_mainTile(promptValue[0], promptValue[1]);
+                    mainTile_list.Add(m1);
+                }
+                
+
             JsonSerializer serializer = new JsonSerializer();
             serializer.Converters.Add(new JavaScriptDateTimeConverter());
             serializer.NullValueHandling = NullValueHandling.Ignore;
@@ -234,7 +245,6 @@ namespace WindowsFormsApplication1
                 using (JsonWriter writer = new JsonTextWriter(sw))
                 {
                     serializer.Serialize(writer, mainTile_list);
-                    // {"ExpiryDate":new Date(1230375600000),"Price":0}
                 }
             }
             MakeMainTiles();
