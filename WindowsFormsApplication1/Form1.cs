@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Python.Runtime;
 using System.Text.RegularExpressions;
 using MetroFramework.Controls;
 using System.Net;
+using System.Web;
+using System.Linq;
+using System.Net.Http;
 using MetroFramework;
 using System.Windows.Forms;
 using System.Threading;
@@ -16,9 +18,6 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : MetroFramework.Forms.MetroForm
     {
-
-        
-
         public Form1()
         {
             InitializeComponent();
@@ -41,7 +40,8 @@ namespace WindowsFormsApplication1
 
             if (!File.Exists(fileName))
             {
-                File.Create(fileName);
+               var k = File.Create(fileName);
+                k.Close();
             }
 
             using (StreamReader file = File.OpenText(fileName))
@@ -59,9 +59,6 @@ namespace WindowsFormsApplication1
             // TODO: StreamReaderJSON and put the code in loop
            // mainTile m = new mainTile("New York Times", "https://www.facebook.com/nytimes/");
            // mainTile_list.Add(m);
-            //mainTile m1 = new mainTile("Science Alert", "https://www.facebook.com/ScienceAlert/");
-            //mainTile_list.Add(m1);
-
             if(mainTile_list != null)
             {
                 for (int i = 0; i < mainTile_list.Count; i++)
@@ -86,7 +83,7 @@ namespace WindowsFormsApplication1
             t.Start();
             string url = Convert.ToString((sender as MetroTile).Tag);
             metroPanelLinks.Controls.Clear();
-            List<String> list = new List<String>();
+            List<mainTile> list = new List<mainTile>();
             list = getTheLinks(url);
             Console.WriteLine(list.Count);
             displayTiles(list);
@@ -104,19 +101,19 @@ namespace WindowsFormsApplication1
         }
 
    
-        private void displayTiles(List<string> list)
+        private void displayTiles(List<mainTile> list)
         {
             int flag = 0;
-            for (int i = 1; i <= list.Count / 3; i++)
+            for (int i = 1; i <= list.Count; i++)
             {
                 MetroFramework.Controls.MetroTile _tile = new MetroTile();
                 Label namelabel = new Label();
                 namelabel.AutoSize = true;
                 namelabel.MaximumSize = new System.Drawing.Size(400, 60); ;
-                namelabel.Text = list[(i - 1) * 3];
+                namelabel.Text = list[(i - 1)].Title;
                 namelabel.Font = new Font(namelabel.Font.Name, 12, FontStyle.Bold);
                 _tile.Size = new Size(400, 200);
-                _tile.Tag = list[(i - 1) * 3 + 1];
+                _tile.Tag = list[(i - 1)].Link;
                 _tile.Cursor = Cursors.Hand;
                 if (flag == 0)
                 {
@@ -137,7 +134,7 @@ namespace WindowsFormsApplication1
                 //_tile.Style = (MetroFramework.MetroColorStyle)i;
                 _tile.Click += _tile_Click;
                 //  _tile.Text = list[(i-1)*3];
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(list[(i - 1) * 3 + 2]);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(list[(i - 1)].Img);
                 request.Method = "GET";
                 request.Accept = "text/html";
                 request.UserAgent = "Fooo";
@@ -148,129 +145,45 @@ namespace WindowsFormsApplication1
                     _tile.TileImage = Image.FromStream(stream);
 
                 }
-                //_tile.ImageAlign
                 _tile.TextAlign = ContentAlignment.TopLeft;
-                //_tile.TextImageRelation
                 _tile.UseTileImage = true;
                 //   _tile.TileTextFontWeight = MetroTileTextWeight.Bold;
                 metroPanelLinks.Controls.Add(_tile);
                 metroPanelLinks.Controls.Add(namelabel);
-                //   metroPanelLinks.HorizontalScrollbarBarColor = true;
-                //   metroPanelLinks.HorizontalScrollbarHighlightOnWheel = false;
-                //  metroPanelLinks.HorizontalScrollbarSize = 10;
-                //Console.WriteLine(_tile.Tag);
             }
         }
 
-        private List<string> getTheLinks(string url)
+        private List<mainTile> getTheLinks(string url)
         {
-            List<String> list = new List<String>();
-            try
+            List<mainTile> list = new List<mainTile>();
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:48.0) Gecko/20100101 Firefox/48.0.1 Waterfox/48.0.1");
+            string html = client.GetStringAsync(url).Result;
+            HtmlAgilityPack.HtmlDocument document = new HtmlAgilityPack.HtmlDocument();
+            document.LoadHtml(html);
+            var anchors = document.DocumentNode.SelectNodes("//div[@class='lfloat _ohe']/span[@class='_3m6-']/div[@class='_6ks']/a");
+            foreach (var a in anchors)
             {
-                using (Py.GIL())
-                {
-                    dynamic sys = Py.Import("sys");
-                    dynamic requests = Py.Import("requests");
-                    dynamic re = Py.Import("re");
-                    dynamic io = Py.Import("io");
-                    dynamic BeautifulSoup = Py.Import("bs4");
-                    dynamic math = Py.Import("math");
-                    Console.WriteLine(5);
-                    dynamic r = requests.get(url);
-                    dynamic data = r.text;
-                    dynamic soup = BeautifulSoup.BeautifulSoup(data, "html.parser");
+                string onmouseover = HttpUtility.HtmlDecode(a.Attributes.AttributesWithName("onmouseover").First().Value);
+                string image = HttpUtility.HtmlDecode(a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value);
+                string title = a.ParentNode.NextSibling.FirstChild.FirstChild.InnerText;
+                var pattern = new Regex(@"LinkshimAsyncLink.swap\(this, ""([^""]+)""\);");
+                var pattern_image = new Regex(@"&url=([^&]+)");
 
-                    var divExp = new { _class = "lfloat" };
-                    var item = soup.find_all(Py.kw("class", divExp._class));
-                    dynamic tag = soup.select("a[href^='https://l.facebook.com/']");
-                    for (var i = 1; i < item.Length(); i++)
-                    {
-                        String input = Convert.ToString(item[i]);
-                        string pattern_link = "(.*href=\"https:[\\/][\\/]l.facebook.com[\\/]l.php\\?u=)|(&.*)";
-                        string replacement_link = " ";
-                        Regex rgx_link = new Regex(pattern_link);
-                        string result_link = rgx_link.Replace(input, replacement_link);
-                        string pattern_link_1 = "(http|https)%.*";
-                        Regex rgx_link_1 = new Regex(pattern_link_1);
-                        Match result_link_1 = rgx_link_1.Match(result_link);
-                        String input_1_1 = Convert.ToString(result_link_1.Value);
-                        string pattern_link_2 = "%3F.*";
-                        Regex rgx_link_2 = new Regex(pattern_link_2);
-                        string result_link_2 = rgx_link_2.Replace(input_1_1, replacement_link);
-
-
-                        result_link_2 = result_link_2.Replace("%2F", "/").Replace("%3A", ":");
-
-                        string pattern_img = "(.*url=)";
-                        string replacement_img = " ";
-                        Regex rgx_img = new Regex(pattern_img);
-                        string result_img = rgx_img.Replace(input, replacement_img);
-                        Match result_img_1 = rgx_link_1.Match(result_img);
-                        String result_img_1_1 = Convert.ToString(result_img_1.Value);
-
-                        string pattern_img_2 = "(&amp.*)";
-                        string replacement_img_2 = " ";
-                        Regex rgx_img_2 = new Regex(pattern_img_2);
-                        string result_img_2 = rgx_img_2.Replace(result_img_1_1, replacement_img_2);
-                        result_img_2 = result_img_2.Replace("%2F", "/").Replace("%3A", ":");
-
-                        string pattern_img_3 = "(%3F.*)";
-                        Regex rgx_img_3 = new Regex(pattern_img_3);
-                        string result_img_3 = rgx_img_3.Replace(result_img_2, replacement_img_2);
-
-                        string pattern_img_4 = "(.jpg)|(.png)";
-                        Regex rgx_img_4 = new Regex(pattern_img_4);
-                        Match result_img_4 = rgx_img_4.Match(result_img_3);
-
-                        if(result_img_4.Success)
-                        {
-                            
-                        }
-                        else
-                        {
-                            result_img_3 = "";
-                        }
-
-                        string pattern_title = "(rel=\"nofollow\" target=\"_blank\">.+?<)";
-                        Regex rgx_title = new Regex(pattern_title);
-                        Match result_title = rgx_title.Match(input);
-                        String result_title_1 = Convert.ToString(result_title.Value);
-                        string pattern_title_2 = "(.*>)|(<.*)";
-                        string replacement_title_2 = " ";
-                        Regex rgx_title_2 = new Regex(pattern_title_2);
-                        string rgx_title_2_1 = rgx_title_2.Replace(result_title_1, replacement_title_2);
-
-                        if (String.IsNullOrEmpty(rgx_title_2_1) || String.IsNullOrEmpty(result_link_2) || String.IsNullOrEmpty(result_img_3))
-                        {
-                            //   Console.WriteLine(" ");
-                        }
-                        else
-                        {
-                            list.Add(rgx_title_2_1);
-                            list.Add(result_link_2);
-                            list.Add(result_img_3);
-                            //  Console.WriteLine(rgx_title_2_1);
-                            //  Console.WriteLine(result_link_2);
-                            //  Console.WriteLine(result_img_2);
-                        }
-                    }
-
-                }
+                var link = pattern.Match(onmouseover).Groups[1].Value.Replace("\\", "");
+                var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
+                mainTile newsTile = new mainTile();
+                newsTile.add_newsTile(title, link, img);
+                list.Add(newsTile);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(
-                   "Oops! We couldn't execute the script because of an exception: " + ex.Message);
-            }
+
             return list;
         }
 
         private void _tile_Click(object sender, EventArgs e)
         {
-           // Console.WriteLine((sender as MetroTile).Tag);
             string link = Convert.ToString((sender as MetroTile).Tag);
             System.Diagnostics.Process.Start(link);
-            //throw new NotImplementedException();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -306,12 +219,12 @@ namespace WindowsFormsApplication1
                 }
             }
             // TODO: Get link from input
-            mainTile m1 = new mainTile("Science Alert", "https://www.facebook.com/ScienceAlert/");
+            mainTile m1 = new mainTile();
+            m1.add_mainTile("Science Alert", "https://www.facebook.com/ScienceAlert/");
             mainTile_list.Add(m1);
             JsonSerializer serializer = new JsonSerializer();
             serializer.Converters.Add(new JavaScriptDateTimeConverter());
             serializer.NullValueHandling = NullValueHandling.Ignore;
-            // string filename = Properties.Resources.json;
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
