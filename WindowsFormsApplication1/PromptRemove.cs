@@ -10,7 +10,7 @@ namespace WindowsFormsApplication1
             MetroFramework.Forms.MetroForm promptRemove = new MetroFramework.Forms.MetroForm()
             {
                 Width = 470,
-                Height = 250,
+                Height = 175,
                 FormBorderStyle = FormBorderStyle.None,
                 Text = "Enter the Title of the Link you want to remove",
                 StartPosition = FormStartPosition.CenterScreen

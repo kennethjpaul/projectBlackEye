@@ -159,32 +159,38 @@ namespace WindowsFormsApplication1
             document.LoadHtml(html);
             var anchors = document.DocumentNode.SelectNodes("//div[@class='lfloat _ohe']/span[@class='_3m6-']/div[@class='_6ks']/a");
             //TODO: Debug the Null values, find out what is happening
-            foreach (var a in anchors)
+            if(anchors!=null)
             {
-                if (a.Attributes.AttributesWithName("onmouseover").First().Value!=null && a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value!=null && a.ParentNode.NextSibling!=null)
+                foreach (var a in anchors)
                 {
-                    string onmouseover = HttpUtility.HtmlDecode(a.Attributes.AttributesWithName("onmouseover").First().Value);
-                    string image = HttpUtility.HtmlDecode(a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value);
-                    string title = a.ParentNode.NextSibling.FirstChild.FirstChild.InnerText;
-                    var pattern = new Regex(@"LinkshimAsyncLink.swap\(this, ""([^""]+)""\);");
-                    var pattern_image = new Regex(@"&url=([^&]+)");
-                    var link = pattern.Match(onmouseover).Groups[1].Value.Replace("\\", "");
-                    var link_chk = new Regex(@"(\?).*");
-                    link = link_chk.Replace(link, "");
-                    //TODO: Do it a better way
-                    var img_check = new Regex(@"(fbstaging:)");
-                    var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
-                    Match _match = img_check.Match(img);
-                    if(_match.Success)
+                    if (a.Attributes.AttributesWithName("onmouseover").First().Value != null && a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value != null && a.ParentNode.NextSibling != null)
                     {
-                        img = "https://d31v04zdn5vmni.cloudfront.net/blog/wp-content/uploads/2014/05/images-not-displayed-690x362.png";
+                        string onmouseover = HttpUtility.HtmlDecode(a.Attributes.AttributesWithName("onmouseover").First().Value);
+                        string image = HttpUtility.HtmlDecode(a.FirstChild.FirstChild.FirstChild.Attributes.AttributesWithName("src").First().Value);
+                        string title = a.ParentNode.NextSibling.FirstChild.FirstChild.InnerText;
+                        var pattern = new Regex(@"LinkshimAsyncLink.swap\(this, ""([^""]+)""\);");
+                        var pattern_image = new Regex(@"&url=([^&]+)");
+                        var link = pattern.Match(onmouseover).Groups[1].Value.Replace("\\", "");
+                        var link_chk = new Regex(@"(\?).*");
+                        link = link_chk.Replace(link, "");
+                        //TODO: Do it a better way
+                        var img_check = new Regex(@"(fbstaging:)");
+                        var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
+                        Match _match = img_check.Match(img);
+                        if (_match.Success)
+                        {
+                            // img = "https://d31v04zdn5vmni.cloudfront.net/blog/wp-content/uploads/2014/05/images-not-displayed-690x362.png";
+                            img = "http://1.bp.blogspot.com/-Zr0pmj1bLnM/Uhh7kROhGYI/AAAAAAAAGkE/W51xFS75-Ec/s1600/no-thumbnail.png";
+                        }
+                        mainTile newsTile = new mainTile();
+                        newsTile.add_newsTile(title, link, img);
+                        list.Add(newsTile);
                     }
-                    mainTile newsTile = new mainTile();
-                    newsTile.add_newsTile(title, link, img);
-                    list.Add(newsTile);
-                }              
-                
+
+                }
+
             }
+            
 
             return list;
         }
@@ -210,8 +216,14 @@ namespace WindowsFormsApplication1
             mainTile_list = loadLinkFromFile();
             string[] promptValue = Prompt.ShowDialog("Title", "Link","Enter Facebook Link");
             Regex trimmer = new Regex(@"\s\s+");
+            Regex link_chk = new Regex("https:[\\/][\\/]www.facebook.com[\\/]");
+            Match link_match = link_chk.Match(promptValue[1]);
+            if(!link_match.Success)
+            {
+                promptValue[1] = "";
 
-           promptValue[0] = trimmer.Replace(promptValue[0], " ");
+            }
+            promptValue[0] = trimmer.Replace(promptValue[0], " ");
            promptValue[1] = trimmer.Replace(promptValue[1], " ");
             // TODO: check for link format
             if (promptValue[0] != " " && promptValue[0] != "" && promptValue[1] != " " && promptValue[1] != "")
