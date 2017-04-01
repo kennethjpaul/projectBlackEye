@@ -18,6 +18,15 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : MetroFramework.Forms.MetroForm
     {
+        private static Splash Splash = null;
+        public static void CloseSplash()
+        {
+            if (Splash != null)
+            {
+               // Splash.CloseSplash();
+            }
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -48,25 +57,36 @@ namespace WindowsFormsApplication1
                     _tile.TextAlign = ContentAlignment.TopLeft;
                     _tile.TileTextFontWeight = MetroTileTextWeight.Bold;
                     _tile.Click += _tile_MainTile_Click;
+                    
                     metroPanelmainTile.Controls.Add(_tile);
                 }
             }            
         }
+      
 
         private void _tile_MainTile_Click(object sender, EventArgs e)
         {
-            Thread t = new Thread(new ThreadStart(Splash));
-            t.Start();
+            //   Thread t = new Thread(new ThreadStart(Splash));
+            //  t.Start();
+            Splash workerObject = new Splash();
+            Splash.random_form(1);
+            Thread workerThread = new Thread(Splash.ShowDialog);
+
+            workerThread.Start();
             string url = Convert.ToString((sender as MetroTile).Tag);
             metroPanelLinks.Controls.Clear();
             List<mainTile> list = new List<mainTile>();
             list = getTheLinks(url);
             Console.WriteLine(list.Count);
             displayTiles(list);
-            t.Abort();
+            Splash.closeForm();
+            workerThread.Join();
+            Splash.random_form(2);
+            // Form1.CloseSplash();
+            //  t.Abort();
         }
 
-        private void Splash()
+        private void Splash1()
         {
             SplashScreen.SplashForm frm = new SplashScreen.SplashForm();
             frm.AppName = "Loading";
@@ -148,9 +168,17 @@ namespace WindowsFormsApplication1
                     string title = a.ParentNode.NextSibling.FirstChild.FirstChild.InnerText;
                     var pattern = new Regex(@"LinkshimAsyncLink.swap\(this, ""([^""]+)""\);");
                     var pattern_image = new Regex(@"&url=([^&]+)");
-
                     var link = pattern.Match(onmouseover).Groups[1].Value.Replace("\\", "");
+                    var link_chk = new Regex(@"(\?).*");
+                    link = link_chk.Replace(link, "");
+                    //TODO: Do it a better way
+                    var img_check = new Regex(@"(fbstaging:)");
                     var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
+                    Match _match = img_check.Match(img);
+                    if(_match.Success)
+                    {
+                        img = "https://d31v04zdn5vmni.cloudfront.net/blog/wp-content/uploads/2014/05/images-not-displayed-690x362.png";
+                    }
                     mainTile newsTile = new mainTile();
                     newsTile.add_newsTile(title, link, img);
                     list.Add(newsTile);
@@ -284,6 +312,7 @@ namespace WindowsFormsApplication1
             writeLinktoFile(mainTile_list);
             MakeMainTiles();
         }
+
     }
 
    
