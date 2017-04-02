@@ -4,12 +4,16 @@
     {
        public string Title,Link,Img;
 
-        public mainTile(string _title, string _link)
+        public mainTile()
+        {
+            
+        }
+        public void add_mainTile(string _title, string _link)
         {
             Title = _title;
             Link = _link;
         }
-        public mainTile(string _title, string _link, string _img)
+        public void add_newsTile(string _title, string _link, string _img)
         {
             Title = _title;
             Link = _link;
