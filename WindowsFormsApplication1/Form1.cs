@@ -137,8 +137,10 @@ namespace WindowsFormsApplication1
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (var stream = response.GetResponseStream())
                 {
-
-                    _tile.TileImage = Image.FromStream(stream);
+                   Image image = Image.FromStream(stream);
+                    var image_16 = new System.Drawing.Bitmap(image, new Size(400, 200));
+                    _tile.TileImage = image_16;
+                    _tile.TileImageAlign = ContentAlignment.MiddleCenter;
 
                 }
                 _tile.TextAlign = ContentAlignment.TopLeft;
@@ -174,6 +176,7 @@ namespace WindowsFormsApplication1
                         var link_chk = new Regex(@"(\?).*");
                         link = link_chk.Replace(link, "");
                         //TODO: Do it a better way
+                        title = title.Replace("&#039;", "\'");
                         var img_check = new Regex(@"(fbstaging:)");
                         var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
                         Match _match = img_check.Match(img);
@@ -280,13 +283,15 @@ namespace WindowsFormsApplication1
                 Directory.CreateDirectory(specificFolder);
 
             string fileName = Path.Combine(specificFolder, "data_file.txt");
+            if (!File.Exists(fileName))
+            {
+             var k =   File.Create(fileName);
+                k.Close();
 
+            }
             using (StreamReader file = File.OpenText(fileName))
             {
-                if (!File.Exists(fileName))
-                {
-                    File.Create(fileName);
-                }
+               
                 List<mainTile> mainTile_list_tmp = new List<mainTile>();
                 JsonSerializer serializer_read = new JsonSerializer();
                 mainTile_list_tmp = (List<mainTile>)serializer_read.Deserialize(file, typeof(List<mainTile>));
