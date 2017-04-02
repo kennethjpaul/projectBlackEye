@@ -72,6 +72,7 @@
             // 
             // addRemovePanel
             // 
+            this.addRemovePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.addRemovePanel.HorizontalScrollbarBarColor = true;
             this.addRemovePanel.HorizontalScrollbarHighlightOnWheel = false;
             this.addRemovePanel.HorizontalScrollbarSize = 10;

@@ -37,11 +37,17 @@ namespace WindowsFormsApplication1
 
         private void MakeAddorRemove()
         {
+            Form myForm = new Form();
+            Screen myScreen = Screen.FromControl(myForm);
+            Rectangle area = myScreen.WorkingArea;
+            metroPanelmainTile.Size = new Size(area.Width-400, 90);
+            metroPanelLinks.Size = new Size(area.Width - 50, 850);
             MetroTile _addtile = new MetroTile();//
             _addtile.Location = new Point(0, 0);
             _addtile.Size = new Size(48, 48);
             _addtile.Click += addButtonClick;
-            _addtile.TileImage = Properties.Resources.add;
+           // _addtile.Text = "Add";
+           _addtile.TileImage = Properties.Resources.add;
             _addtile.UseTileImage = true;
             _addtile.BackColor = Color.White;
             _addtile.CustomBackground = true;
@@ -52,6 +58,7 @@ namespace WindowsFormsApplication1
             _removetile.Location = new Point(50, 0);
             _removetile.Size = new Size(48, 48);
             _removetile.Click += removeButtonClick;
+           // _removetile.Text = "Remove";
             _removetile.TileImage = Properties.Resources.remove;
             _removetile.UseTileImage = true;
             _removetile.BackColor = Color.White;
@@ -61,7 +68,8 @@ namespace WindowsFormsApplication1
             _helptile.Location = new Point(100, 0);
             _helptile.Size = new Size(48, 48);
             _helptile.Click += helpButtonClick;
-            _helptile.TileImage = Properties.Resources.help;
+           // _helptile.Text = "Help";
+           _helptile.TileImage = Properties.Resources.help;
             _helptile.UseTileImage = true;
             _helptile.BackColor = Color.White;
             _helptile.CustomBackground = true;
