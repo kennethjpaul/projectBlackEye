@@ -31,9 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.metroPanelLinks = new MetroFramework.Controls.MetroPanel();
             this.metroPanelmainTile = new MetroFramework.Controls.MetroPanel();
-            this.addButton = new MetroFramework.Controls.MetroTile();
-            this.removeButton = new MetroFramework.Controls.MetroTile();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.addRemovePanel = new MetroFramework.Controls.MetroPanel();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,30 +63,25 @@
             this.metroPanelmainTile.HorizontalScrollbarSize = 10;
             this.metroPanelmainTile.Location = new System.Drawing.Point(211, 17);
             this.metroPanelmainTile.Name = "metroPanelmainTile";
-            this.metroPanelmainTile.Size = new System.Drawing.Size(1496, 91);
+            this.metroPanelmainTile.Size = new System.Drawing.Size(1472, 91);
             this.metroPanelmainTile.TabIndex = 5;
             this.metroPanelmainTile.VerticalScrollbar = true;
             this.metroPanelmainTile.VerticalScrollbarBarColor = true;
             this.metroPanelmainTile.VerticalScrollbarHighlightOnWheel = true;
             this.metroPanelmainTile.VerticalScrollbarSize = 10;
             // 
-            // addButton
+            // addRemovePanel
             // 
-            this.addButton.Location = new System.Drawing.Point(1730, 92);
-            this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(75, 75);
-            this.addButton.TabIndex = 6;
-            this.addButton.Text = "Add";
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
-            // 
-            // removeButton
-            // 
-            this.removeButton.Location = new System.Drawing.Point(1822, 92);
-            this.removeButton.Name = "removeButton";
-            this.removeButton.Size = new System.Drawing.Size(75, 75);
-            this.removeButton.TabIndex = 7;
-            this.removeButton.Text = "Remove";
-            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
+            this.addRemovePanel.HorizontalScrollbarBarColor = true;
+            this.addRemovePanel.HorizontalScrollbarHighlightOnWheel = false;
+            this.addRemovePanel.HorizontalScrollbarSize = 10;
+            this.addRemovePanel.Location = new System.Drawing.Point(1689, 74);
+            this.addRemovePanel.Name = "addRemovePanel";
+            this.addRemovePanel.Size = new System.Drawing.Size(216, 106);
+            this.addRemovePanel.TabIndex = 6;
+            this.addRemovePanel.VerticalScrollbarBarColor = true;
+            this.addRemovePanel.VerticalScrollbarHighlightOnWheel = false;
+            this.addRemovePanel.VerticalScrollbarSize = 10;
             // 
             // Form1
             // 
@@ -95,8 +89,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1920, 1080);
-            this.Controls.Add(this.removeButton);
-            this.Controls.Add(this.addButton);
+            this.Controls.Add(this.addRemovePanel);
             this.Controls.Add(this.metroPanelmainTile);
             this.Controls.Add(this.metroPanelLinks);
             this.Name = "Form1";
@@ -110,9 +103,8 @@
         #endregion
         private MetroFramework.Controls.MetroPanel metroPanelLinks;
         private MetroFramework.Controls.MetroPanel metroPanelmainTile;
-        private MetroFramework.Controls.MetroTile addButton;
-        private MetroFramework.Controls.MetroTile removeButton;
         private System.Windows.Forms.BindingSource bindingSource1;
+        private MetroFramework.Controls.MetroPanel addRemovePanel;
     }
 }
 
