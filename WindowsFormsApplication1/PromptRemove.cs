@@ -12,7 +12,7 @@ namespace WindowsFormsApplication1
                 Width = 470,
                 Height = 175,
                 FormBorderStyle = FormBorderStyle.None,
-                Text = "Enter the Title of the Link you want to remove",
+                Text = "Title to Remove",
                 StartPosition = FormStartPosition.CenterScreen
             };
 

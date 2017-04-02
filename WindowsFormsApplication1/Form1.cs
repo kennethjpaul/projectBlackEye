@@ -32,9 +32,113 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             Console.WriteLine("Yeah Called");
             MakeMainTiles();
-           
+            MakeAddorRemove();
         }
-       
+
+        private void MakeAddorRemove()
+        {
+            MetroTile _addtile = new MetroTile();//
+            _addtile.Location = new Point(0, 0);
+            _addtile.Size = new Size(48, 48);
+            _addtile.Click += addButtonClick;
+            _addtile.TileImage = Properties.Resources.add;
+            _addtile.UseTileImage = true;
+            _addtile.BackColor = Color.White;
+            _addtile.CustomBackground = true;
+
+
+
+            MetroTile _removetile = new MetroTile();//
+            _removetile.Location = new Point(50, 0);
+            _removetile.Size = new Size(48, 48);
+            _removetile.Click += removeButtonClick;
+            _removetile.TileImage = Properties.Resources.remove;
+            _removetile.UseTileImage = true;
+            _removetile.BackColor = Color.White;
+            _removetile.CustomBackground = true;
+
+            MetroTile _helptile = new MetroTile();//
+            _helptile.Location = new Point(100, 0);
+            _helptile.Size = new Size(48, 48);
+            _helptile.Click += helpButtonClick;
+            _helptile.TileImage = Properties.Resources.help;
+            _helptile.UseTileImage = true;
+            _helptile.BackColor = Color.White;
+            _helptile.CustomBackground = true;
+
+
+            addRemovePanel.Controls.Add(_addtile);
+            addRemovePanel.Controls.Add(_removetile);
+            addRemovePanel.Controls.Add(_helptile);
+
+        }
+
+        private void helpButtonClick(object sender, EventArgs e)
+        {
+            string promptValue = PromptHelp.ShowDialog();
+        }
+
+        private void removeButtonClick(object sender, EventArgs e)
+        {
+            List<mainTile> mainTile_list = new List<mainTile>();
+
+            mainTile_list = loadLinkFromFile();
+            string promptValue = PromptRemove.ShowDialog();
+            Regex trimmer = new Regex(@"\s\s+");
+
+            promptValue = trimmer.Replace(promptValue, " ");
+            if (promptValue != " " && promptValue != "")
+            {
+                 if(mainTile_list.Find(x => x.Title.Contains(promptValue)) != null)
+                  {
+                    string _str = mainTile_list.Find(x => x.Title.Contains(promptValue)).Title;
+                    if (promptValue.Equals(_str, StringComparison.Ordinal))
+                    {
+                        int _index = mainTile_list.FindIndex(x => x.Title.Contains(promptValue));
+                        if (_index >= 0)
+                        {
+                            mainTile_list.RemoveAt(_index);
+                        }
+                    }
+                }
+                
+
+            }
+
+            writeLinktoFile(mainTile_list);
+            MakeMainTiles();
+        }
+
+        private void addButtonClick(object sender, EventArgs e)
+        {
+            List<mainTile> mainTile_list = new List<mainTile>();
+
+            mainTile_list = loadLinkFromFile();
+            string[] promptValue = Prompt.ShowDialog("Title", "Link", "Enter Facebook Link");
+            Regex trimmer = new Regex(@"\s\s+");
+            Regex link_chk = new Regex("https:[\\/][\\/]www.facebook.com[\\/]");
+            Match link_match = link_chk.Match(promptValue[1]);
+            if (!link_match.Success)
+            {
+                promptValue[1] = "";
+
+            }
+            promptValue[0] = trimmer.Replace(promptValue[0], " ");
+            promptValue[1] = trimmer.Replace(promptValue[1], " ");
+            // TODO: check for link format
+            if (promptValue[0] != " " && promptValue[0] != "" && promptValue[1] != " " && promptValue[1] != "")
+            {
+                mainTile m1 = new mainTile();
+                m1.add_mainTile(promptValue[0], promptValue[1]);
+                mainTile_list.Add(m1);
+            }
+
+            writeLinktoFile(mainTile_list);
+
+
+            MakeMainTiles();
+        }
+
         private void MakeMainTiles()
         {
             
@@ -214,32 +318,7 @@ namespace WindowsFormsApplication1
 
         private void addButton_Click(object sender, EventArgs e)
         {
-            List<mainTile> mainTile_list = new List<mainTile>();
-
-            mainTile_list = loadLinkFromFile();
-            string[] promptValue = Prompt.ShowDialog("Title", "Link","Enter Facebook Link");
-            Regex trimmer = new Regex(@"\s\s+");
-            Regex link_chk = new Regex("https:[\\/][\\/]www.facebook.com[\\/]");
-            Match link_match = link_chk.Match(promptValue[1]);
-            if(!link_match.Success)
-            {
-                promptValue[1] = "";
-
-            }
-            promptValue[0] = trimmer.Replace(promptValue[0], " ");
-           promptValue[1] = trimmer.Replace(promptValue[1], " ");
-            // TODO: check for link format
-            if (promptValue[0] != " " && promptValue[0] != "" && promptValue[1] != " " && promptValue[1] != "")
-                {
-                    mainTile m1 = new mainTile();
-                    m1.add_mainTile(promptValue[0], promptValue[1]);
-                    mainTile_list.Add(m1);
-                }
-
-            writeLinktoFile(mainTile_list);
-
             
-            MakeMainTiles();
         }
 
         private void writeLinktoFile(List<mainTile> mainTile_list)
@@ -305,29 +384,7 @@ namespace WindowsFormsApplication1
 
         private void removeButton_Click(object sender, EventArgs e)
         {
-            List<mainTile> mainTile_list = new List<mainTile>();
-
-            mainTile_list = loadLinkFromFile();
-            string promptValue = PromptRemove.ShowDialog();
-            Regex trimmer = new Regex(@"\s\s+");
-
-            promptValue= trimmer.Replace(promptValue, " ");
-            if (promptValue!= " " && promptValue != "")
-            {
-                string _str = mainTile_list.Find(x => x.Title.Contains(promptValue)).Title;
-                if(promptValue.Equals(_str, StringComparison.Ordinal))
-                {
-                    int _index = mainTile_list.FindIndex(x => x.Title.Contains(promptValue));
-                    if (_index >= 0)
-                    {
-                        mainTile_list.RemoveAt(_index);
-                    }
-                }
-           
-            }
-                
-            writeLinktoFile(mainTile_list);
-            MakeMainTiles();
+            
         }
 
     }
