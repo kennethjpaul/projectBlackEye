@@ -313,7 +313,8 @@ namespace WindowsFormsApplication1
         private void _tile_Click(object sender, EventArgs e)
         {
             string link = Convert.ToString((sender as MetroTile).Tag);
-            System.Diagnostics.Process.Start(link);
+        //    System.Diagnostics.Process.Start(link);
+            string promptValue = WebBrowserOpen.ShowDialog(link);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
