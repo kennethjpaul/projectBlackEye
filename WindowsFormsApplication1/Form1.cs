@@ -13,11 +13,16 @@ using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace WindowsFormsApplication1
 {
     public partial class Form1 : MetroFramework.Forms.MetroForm
     {
+        private const int INTERNET_OPTION_END_BROWSER_SESSION = 42;
+
+        [DllImport("wininet.dll", SetLastError = true)]
+        private static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int lpdwBufferLength);
         private static Splash Splash = null;
         public static void CloseSplash()
         {
@@ -33,6 +38,8 @@ namespace WindowsFormsApplication1
             Console.WriteLine("Yeah Called");
             MakeMainTiles();
             MakeAddorRemove();
+            WebBrowserHelper.ClearCache();
+            InternetSetOption(IntPtr.Zero, INTERNET_OPTION_END_BROWSER_SESSION, IntPtr.Zero, 0);
         }
 
         private void MakeAddorRemove()
@@ -244,7 +251,7 @@ namespace WindowsFormsApplication1
                 //  _tile.Text = list[(i-1)*3];
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(list[(i - 1)].Img);
                 request.Method = "GET";
-                request.Accept = "text/html";
+             //   request.Accept = "text/html";
                 request.UserAgent = "Fooo";
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (var stream = response.GetResponseStream())
@@ -313,8 +320,18 @@ namespace WindowsFormsApplication1
         private void _tile_Click(object sender, EventArgs e)
         {
             string link = Convert.ToString((sender as MetroTile).Tag);
-        //    System.Diagnostics.Process.Start(link);
-            string promptValue = WebBrowserOpen.ShowDialog(link);
+            bool toggleButton = browserToggle.Checked;
+            if (toggleButton)
+            {
+                string newLink = "--incognito " + link;
+                System.Diagnostics.Process.Start(@"chrome.exe", newLink);
+            }
+            else
+            {
+                string promptValue = WebBrowserOpen.ShowDialog(link);
+            }
+        //    ;
+            
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

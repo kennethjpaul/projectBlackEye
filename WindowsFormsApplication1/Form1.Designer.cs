@@ -33,6 +33,8 @@
             this.metroPanelmainTile = new MetroFramework.Controls.MetroPanel();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.addRemovePanel = new MetroFramework.Controls.MetroPanel();
+            this.browserToggle = new MetroFramework.Controls.MetroToggle();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -84,12 +86,33 @@
             this.addRemovePanel.VerticalScrollbarHighlightOnWheel = false;
             this.addRemovePanel.VerticalScrollbarSize = 10;
             // 
+            // browserToggle
+            // 
+            this.browserToggle.AutoSize = true;
+            this.browserToggle.Location = new System.Drawing.Point(23, 147);
+            this.browserToggle.Name = "browserToggle";
+            this.browserToggle.Size = new System.Drawing.Size(80, 21);
+            this.browserToggle.TabIndex = 7;
+            this.browserToggle.Text = "Off";
+            this.browserToggle.UseVisualStyleBackColor = true;
+            // 
+            // metroLabel1
+            // 
+            this.metroLabel1.AutoSize = true;
+            this.metroLabel1.Location = new System.Drawing.Point(23, 121);
+            this.metroLabel1.Name = "metroLabel1";
+            this.metroLabel1.Size = new System.Drawing.Size(136, 20);
+            this.metroLabel1.TabIndex = 8;
+            this.metroLabel1.Text = "Open Link Externally";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1920, 1080);
+            this.Controls.Add(this.metroLabel1);
+            this.Controls.Add(this.browserToggle);
             this.Controls.Add(this.addRemovePanel);
             this.Controls.Add(this.metroPanelmainTile);
             this.Controls.Add(this.metroPanelLinks);
@@ -98,6 +121,7 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -106,6 +130,8 @@
         private MetroFramework.Controls.MetroPanel metroPanelmainTile;
         private System.Windows.Forms.BindingSource bindingSource1;
         private MetroFramework.Controls.MetroPanel addRemovePanel;
+        private MetroFramework.Controls.MetroToggle browserToggle;
+        private MetroFramework.Controls.MetroLabel metroLabel1;
     }
 }
 
