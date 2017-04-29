@@ -11,24 +11,21 @@ namespace WindowsFormsApplication1
     {
         private static volatile bool _shouldStop;
         static MetroFramework.Forms.MetroForm promptRemove;
-        public static void ShowDialog()
+        public static string ShowDialog()
         {
             _shouldStop = false;
-          
-              while (!_shouldStop)
-               {
-                
-               }
+            return "";
         }
         
       
         public static void closeForm()
         {
+            promptRemove.Close();
             _shouldStop = true;
        //     random_form(2);
         }
 
-        public static void random_form(int flag)
+        public static string random_form(int flag)
         {
             if (flag == 1)
             {
@@ -43,10 +40,12 @@ namespace WindowsFormsApplication1
                 
                 promptRemove.TopMost = true;
                 promptRemove.Visible = true;
+                return "";
             }
             else
             {
                 promptRemove.Close();
+                return "";
             }
 
         }

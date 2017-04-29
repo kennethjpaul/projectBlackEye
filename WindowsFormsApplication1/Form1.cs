@@ -185,13 +185,14 @@ namespace WindowsFormsApplication1
 
         private void _tile_MainTile_Click(object sender, EventArgs e)
         {
-            //   Thread t = new Thread(new ThreadStart(Splash));
-            //  t.Start();
-            Splash workerObject = new Splash();
-            Splash.random_form(1);
-            Thread workerThread = new Thread(Splash.ShowDialog);
+           //    Thread t = new Thread(new ThreadStart(Splash));
+           //   t.Start();
+          // Splash workerObject = new Splash();
+           Splash.random_form(1);
+            //String workerThread = new String(Splash.ShowDialog);
 
-            workerThread.Start();
+           // workerThread.Start();
+            //
             string url = Convert.ToString((sender as MetroTile).Tag);
             metroPanelLinks.Controls.Clear();
             List<mainTile> list = new List<mainTile>();
@@ -199,8 +200,10 @@ namespace WindowsFormsApplication1
             Console.WriteLine(list.Count);
             displayTiles(list);
             Splash.closeForm();
-            workerThread.Join();
-            Splash.random_form(2);
+           // workerThread.Join();
+         //   Splash.random_form(2);
+
+
             // Form1.CloseSplash();
             //  t.Abort();
         }
@@ -249,10 +252,10 @@ namespace WindowsFormsApplication1
                 //_tile.Style = (MetroFramework.MetroColorStyle)i;
                 _tile.Click += _tile_Click;
                 //  _tile.Text = list[(i-1)*3];
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(list[(i - 1)].Img);
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(list[(i - 1)].Img);
                 request.Method = "GET";
-             //   request.Accept = "text/html";
-                request.UserAgent = "Fooo";
+              //  request.Accept = @"text/html";
+                request.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (var stream = response.GetResponseStream())
                 {
@@ -297,9 +300,13 @@ namespace WindowsFormsApplication1
                         //TODO: Do it a better way
                         title = title.Replace("&#039;", "\'");
                         var img_check = new Regex(@"(fbstaging:)");
+                        var img_check_1 = new Regex(@"(cdn)");
                         var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
+
                         Match _match = img_check.Match(img);
-                        if (_match.Success)
+                        Match _match_1 = img_check_1.Match(img);
+                        img = img.Replace("=","");
+                        if (_match.Success )
                         {
                             // img = "https://d31v04zdn5vmni.cloudfront.net/blog/wp-content/uploads/2014/05/images-not-displayed-690x362.png";
                             img = "http://1.bp.blogspot.com/-Zr0pmj1bLnM/Uhh7kROhGYI/AAAAAAAAGkE/W51xFS75-Ec/s1600/no-thumbnail.png";
