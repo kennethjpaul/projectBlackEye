@@ -252,19 +252,51 @@ namespace WindowsFormsApplication1
                 //_tile.Style = (MetroFramework.MetroColorStyle)i;
                 _tile.Click += _tile_Click;
                 //  _tile.Text = list[(i-1)*3];
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(list[(i - 1)].Img);
-                request.Method = "GET";
-              //  request.Accept = @"text/html";
-                request.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (var stream = response.GetResponseStream())
+                if (list[(i - 1)].Img!="")
                 {
-                   Image image = Image.FromStream(stream);
-                    var image_16 = new System.Drawing.Bitmap(image, new Size(400, 200));
-                    _tile.TileImage = image_16;
-                    _tile.TileImageAlign = ContentAlignment.MiddleCenter;
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(list[(i - 1)].Img);
+                    request.Method = "GET";
+                    //  request.Accept = @"text/html";
+                    request.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+                    try
+                    {
+                        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                        using (var stream = response.GetResponseStream())
+                        {
+                            Image image = Image.FromStream(stream);
+                            var image_16 = new System.Drawing.Bitmap(image, new Size(400, 200));
+                            _tile.TileImage = image_16;
+                            _tile.TileImageAlign = ContentAlignment.MiddleCenter;
 
+                        }
+                    }
+                    catch
+                    {
+                        HttpWebRequest request_1 = (HttpWebRequest)WebRequest.Create("http://1.bp.blogspot.com/-Zr0pmj1bLnM/Uhh7kROhGYI/AAAAAAAAGkE/W51xFS75-Ec/s1600/no-thumbnail.png");
+                        request_1.Method = "GET";
+                        //  request.Accept = @"text/html";
+                        request_1.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+                        try
+                        {
+                            HttpWebResponse response = (HttpWebResponse)request_1.GetResponse();
+                            using (var stream = response.GetResponseStream())
+                            {
+                                Image image = Image.FromStream(stream);
+                                var image_16 = new Bitmap(image, new Size(400, 200));
+                                _tile.TileImage = image_16;
+                                _tile.TileImageAlign = ContentAlignment.MiddleCenter;
+
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                    }
                 }
+               
+            
+                
                 _tile.TextAlign = ContentAlignment.TopLeft;
                 _tile.UseTileImage = true;
                 //   _tile.TileTextFontWeight = MetroTileTextWeight.Bold;
@@ -299,8 +331,9 @@ namespace WindowsFormsApplication1
                         link = link_chk.Replace(link, "");
                         //TODO: Do it a better way
                         title = title.Replace("&#039;", "\'");
+                        title = title.Replace("quot;","''");
                         var img_check = new Regex(@"(fbstaging:)");
-                        var img_check_1 = new Regex(@"(cdn)");
+                        var img_check_1 = new Regex(@"(png)$|(jpg)$");
                         var img = HttpUtility.UrlDecode(pattern_image.Match(image).Groups[1].Value);
 
                         Match _match = img_check.Match(img);

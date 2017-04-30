@@ -9,11 +9,11 @@ namespace WindowsFormsApplication1
 {
     public class Splash
     {
-        private static volatile bool _shouldStop;
+      //  private static volatile bool _shouldStop;
         static MetroFramework.Forms.MetroForm promptRemove;
         public static string ShowDialog()
         {
-            _shouldStop = false;
+         //   _shouldStop = false;
             return "";
         }
         
@@ -21,7 +21,7 @@ namespace WindowsFormsApplication1
         public static void closeForm()
         {
             promptRemove.Close();
-            _shouldStop = true;
+        //    _shouldStop = true;
        //     random_form(2);
         }
 
@@ -37,7 +37,10 @@ namespace WindowsFormsApplication1
                     Text = "Loading The Links",
                     StartPosition = FormStartPosition.CenterScreen
                 };
-                
+            //    MetroProgressSpinner _spinner = new MetroProgressSpinner();
+            //    _spinner.Size = new Size(100, 100);
+            //    _spinner.Location = new Point(100, 100);
+            //    promptRemove.Controls.Add(_spinner);
                 promptRemove.TopMost = true;
                 promptRemove.Visible = true;
                 return "";
